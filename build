@@ -1,0 +1,42 @@
+#!/bin/bash
+
+ROOT=$(readlink -f $(dirname ${0}))
+
+mkdir -p .build
+pushd .build
+
+git clone --depth 1 https://github.com/vim/vim vim
+
+git clone --depth 1 --single-branch -b 2.7 https://github.com/python/cpython python27
+cp python27/PC/pyconfig.h python27/Include
+
+git clone --depth 1 --single-branch -b 3.8 https://github.com/python/cpython python38
+cp python38/PC/pyconfig.h python38/Include
+
+git clone --depth 1 --single-branch -b v2.1 https://github.com/LuaJIT/LuaJIT LuaJIT
+
+pushd vim
+
+git apply ${ROOT}/patches/revert_v8.2.1381.patch
+git apply ${ROOT}/patches/modern_icon.patch
+git apply ${ROOT}/patches/tabline-close.patch
+git apply ${ROOT}/patches/feat_proportional_fonts.patch
+git apply ${ROOT}/patches/gui_cmd.patch
+
+make -C src -f Make_ming.mak \
+    CROSS_COMPILE=x86_64-w64-mingw32- WINDRES=x86_64-w64-mingw32-windres \
+    GUI=yes \
+    VIMDLL=yes \
+    PROPORTIONAL_FONTS=yes \
+    LUA=../../LuaJIT/src DYNAMIC_LUA=yes LUA_VER=51 \
+    PYTHON=yes PYTHONINC=-I../../python27/Include PYTHON_VER=27 \
+    PYTHON3=yes PYTHON3INC=-I../../python38/Include PYTHON3_VER=38 \
+    STATIC_STDCPLUS=yes \
+    -j 6
+
+popd
+
+popd
+
+mkdir -p release
+cp -r .build/vim/src/vim64.dll .build/vim/src/vim.exe .build/vim/src/gvim.exe .build/vim/runtime .build/vim/src/vimrun.exe release

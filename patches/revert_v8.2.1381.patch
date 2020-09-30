@@ -1,0 +1,112 @@
+diff --git a/src/Make_cyg_ming.mak b/src/Make_cyg_ming.mak
+index 1c519d9..dedc98d 100644
+--- a/src/Make_cyg_ming.mak
++++ b/src/Make_cyg_ming.mak
+@@ -588,8 +588,6 @@ ifdef PYTHON3
+ CFLAGS += -DFEAT_PYTHON3
+  ifeq (yes, $(DYNAMIC_PYTHON3))
+ CFLAGS += -DDYNAMIC_PYTHON3 -DDYNAMIC_PYTHON3_DLL=\"$(DYNAMIC_PYTHON3_DLL)\"
+- else
+-CFLAGS += -DPYTHON3_DLL=\"$(DYNAMIC_PYTHON3_DLL)\"
+  endif
+ endif
+ 
+diff --git a/src/Make_mvc.mak b/src/Make_mvc.mak
+index d66ff71..3b72001 100644
+--- a/src/Make_mvc.mak
++++ b/src/Make_mvc.mak
+@@ -1026,9 +1026,6 @@ PYTHON_LIB = $(PYTHON)\libs\python$(PYTHON_VER).lib
+ ! ifndef PYTHON3_VER
+ PYTHON3_VER = 36
+ ! endif
+-! ifndef DYNAMIC_PYTHON3_DLL
+-DYNAMIC_PYTHON3_DLL = python$(PYTHON3_VER).dll
+-! endif
+ ! message Python3 requested (version $(PYTHON3_VER)) - root dir is "$(PYTHON3)"
+ ! if "$(DYNAMIC_PYTHON3)" == "yes"
+ !  message Python3 DLL will be loaded dynamically
+@@ -1038,10 +1035,9 @@ PYTHON3_OBJ = $(OUTDIR)\if_python3.obj
+ PYTHON3_INC = /I "$(PYTHON3)\Include" /I "$(PYTHON3)\PC"
+ ! if "$(DYNAMIC_PYTHON3)" == "yes"
+ CFLAGS = $(CFLAGS) -DDYNAMIC_PYTHON3 \
+-		-DDYNAMIC_PYTHON3_DLL=\"$(DYNAMIC_PYTHON3_DLL)\"
++		-DDYNAMIC_PYTHON3_DLL=\"python$(PYTHON3_VER).dll\"
+ PYTHON3_LIB = /nodefaultlib:python$(PYTHON3_VER).lib
+ ! else
+-CFLAGS = $(CFLAGS) -DPYTHON3_DLL=\"$(DYNAMIC_PYTHON3_DLL)\"
+ PYTHON3_LIB = $(PYTHON3)\libs\python$(PYTHON3_VER).lib
+ ! endif
+ !endif
+diff --git a/src/if_python3.c b/src/if_python3.c
+index 214ba29..843fa07 100644
+--- a/src/if_python3.c
++++ b/src/if_python3.c
+@@ -907,47 +907,6 @@ python3_loaded(void)
+ 
+ static wchar_t *py_home_buf = NULL;
+ 
+-#if defined(MSWIN) && (PY_VERSION_HEX >= 0x030500f0)
+-// Python 3.5 or later will abort inside Py_Initialize() when stdin is
+-// redirected.  Reconnect stdin to CONIN$.
+-// Note that the python DLL is linked to its own stdio DLL which can be
+-// differ from Vim's stdio.
+-    static void
+-reset_stdin(void)
+-{
+-    FILE *(*py__acrt_iob_func)(unsigned) = NULL;
+-    FILE *(*pyfreopen)(const char *, const char *, FILE *) = NULL;
+-    HINSTANCE hinst;
+-
+-# ifdef DYNAMIC_PYTHON3
+-    hinst = hinstPy3;
+-# else
+-    hinst = GetModuleHandle(PYTHON3_DLL);
+-# endif
+-    if (hinst == NULL)
+-	return;
+-
+-    // Get "freopen" and "stdin" which are used in the python DLL.
+-    // "stdin" is defined as "__acrt_iob_func(0)" in VC++ 2015 or later.
+-    py__acrt_iob_func = get_dll_import_func(hinst, "__acrt_iob_func");
+-    if (py__acrt_iob_func)
+-    {
+-	HINSTANCE hpystdiodll = find_imported_module_by_funcname(hinst,
+-							"__acrt_iob_func");
+-	if (hpystdiodll)
+-	    pyfreopen = (void*)GetProcAddress(hpystdiodll, "freopen");
+-    }
+-
+-    // Reconnect stdin to CONIN$.
+-    if (pyfreopen)
+-	pyfreopen("CONIN$", "r", py__acrt_iob_func(0));
+-    else
+-	freopen("CONIN$", "r", stdin);
+-}
+-#else
+-# define reset_stdin()
+-#endif
+-
+     static int
+ Python3_Init(void)
+ {
+@@ -980,7 +939,6 @@ Python3_Init(void)
+ 
+ 	PyImport_AppendInittab("vim", Py3Init_vim);
+ 
+-	reset_stdin();
+ 	Py_Initialize();
+ 
+ 	// Initialise threads, and below save the state using
+diff --git a/src/version.c b/src/version.c
+index 3d7c5b1..3b5fedc 100644
+--- a/src/version.c
++++ b/src/version.c
+@@ -754,8 +754,6 @@ static char *(features[]) =
+     1383,
+ /**/
+     1382,
+-/**/
+-    1381,
+ /**/
+     1380,
+ /**/

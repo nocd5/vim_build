@@ -1,0 +1,30 @@
+diff --git a/src/Make_cyg_ming.mak b/src/Make_cyg_ming.mak
+index 63f7fa9..63a5ea0 100644
+--- a/src/Make_cyg_ming.mak
++++ b/src/Make_cyg_ming.mak
+@@ -801,6 +803,12 @@ LIB += -limm32
+  endif
+ endif
+ 
++ifeq (yes, $(GUI))
++ifeq (yes, $(PROPORTIONAL_FONTS))
++DEFINES += -DFEAT_PROPORTIONAL_FONTS
++endif
++endif
++
+ ifdef ICONV
+  ifneq (yes, $(ICONV))
+ LIB += -L$(ICONV)
+diff --git a/src/os_mswin.c b/src/os_mswin.c
+index 625fdcc..ae988e4 100644
+--- a/src/os_mswin.c
++++ b/src/os_mswin.c
+@@ -2877,7 +2881,7 @@ get_logfont(
+ 	CLEAR_FIELD(cf);
+ 	cf.lStructSize = sizeof(cf);
+ 	cf.hwndOwner = s_hwnd;
+-	cf.Flags = CF_SCREENFONTS | CF_FIXEDPITCHONLY | CF_INITTOLOGFONTSTRUCT;
++	cf.Flags = CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
+ 	if (lastlf != NULL)
+ 	    *lf = *lastlf;
+ 	cf.lpLogFont = lf;

@@ -1,0 +1,13 @@
+diff --git a/src/gui.h b/src/gui.h
+index a16f0986e..e54a1f902 100644
+--- a/src/gui.h
++++ b/src/gui.h
+@@ -244,7 +244,7 @@ typedef long	    guicolor_T;	/* handle for a GUI color; for X11 this should
+ // Uncomment the next definition if you want to use the `:gui` command on
+ // Windows.  It uses `:mksession` to inherit the session from vim.exe to
+ // gvim.exe.  So, it doesn't work perfectly. (EXPERIMENTAL)
+-//# define EXPERIMENTAL_GUI_CMD
++# define EXPERIMENTAL_GUI_CMD
+ #endif
+ 
+ typedef struct Gui

@@ -1,0 +1,56 @@
+diff --git a/src/gui_w32.c b/src/gui_w32.c
+index 1ef74da..e932083 100644
+--- a/src/gui_w32.c
++++ b/src/gui_w32.c
+@@ -8586,6 +8586,7 @@ GetTabFromPoint(
+ 
+ static POINT	    s_pt = {0, 0};
+ static HCURSOR      s_hCursor = NULL;
++static tabpage_T    *s_tp = NULL;
+ 
+     static LRESULT CALLBACK
+ tabline_wndproc(
+@@ -8657,6 +8658,43 @@ tabline_wndproc(
+ 		}
+ 		break;
+ 	    }
++	case WM_MBUTTONDOWN:
++	    {
++		pt.x = GET_X_LPARAM(lParam);
++		pt.y = GET_Y_LPARAM(lParam);
++		s_tp = GetTabFromPoint(hwnd, pt);
++		if (s_tp != NULL)
++		    SetCapture(hwnd);
++		break;
++	    }
++	case WM_MBUTTONUP:
++	    {
++		if (GetCapture() == hwnd)
++		{
++		    ReleaseCapture();
++		    /* when the mouse events was executed on the same tab */
++		    pt.x = GET_X_LPARAM(lParam);
++		    pt.y = GET_Y_LPARAM(lParam);
++		    if (GetTabFromPoint(hwnd, pt) == s_tp)
++		    {
++			if (s_tp == curtab)
++			{
++			    if (first_tabpage->tp_next != NULL)
++			    {
++				tabpage_close(FALSE);
++				update_screen(0);
++			    }
++			}
++			else if (s_tp != NULL)
++			{
++			    tabpage_close_other(s_tp, FALSE);
++			    update_screen(0);
++			}
++		    }
++		    s_tp = NULL;
++		}
++		break;
++	    }
+ 	default:
+ 	    break;
+     }
