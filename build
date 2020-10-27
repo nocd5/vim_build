@@ -17,7 +17,6 @@ git clone --depth 1 --single-branch -b v2.1 https://github.com/LuaJIT/LuaJIT Lua
 
 pushd vim
 
-git apply ${ROOT}/patches/revert_v8.2.1381.patch
 git apply ${ROOT}/patches/modern_icon.patch
 git apply ${ROOT}/patches/tabline-close.patch
 git apply ${ROOT}/patches/feat_proportional_fonts.patch
