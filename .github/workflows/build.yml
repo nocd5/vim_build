@@ -7,10 +7,11 @@ on:
     branches: [ master ]
   schedule:
   - cron:  "30 23 * * *"
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
 
@@ -27,14 +28,29 @@ jobs:
         echo "::set-output name=tag::$(git describe --tags)"
         popd
 
-    - name: Archive
+    - name: Create Archive
       run: |
         pushd release
         7z a ../vim_${{ steps.set_vars.outputs.tag }}.zip *
         popd
 
-    - name: Upload
-      uses: actions/upload-artifact@v2
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: vim_${{ steps.set_vars.outputs.tag }}
-        path: release
+        tag_name: ${{ steps.set_vars.outputs.tag }}
+        release_name: ${{ steps.set_vars.outputs.tag }}
+        draft: false
+        prerelease: false
+
+    - name: Upload
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: vim_${{ steps.set_vars.outputs.tag }}.zip
+        asset_name: vim_${{ steps.set_vars.outputs.tag }}.zip
+        asset_content_type: application/zip
