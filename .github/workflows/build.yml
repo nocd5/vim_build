@@ -1,0 +1,40 @@
+name: nocd5 Nightly Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+  - cron:  "30 23 * * *"
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup
+      run: sudo apt install build-essential mingw-w64
+
+    - name: Build
+      run: bash ./build
+
+    - name: Set Vars
+      id: set_vars
+      run: |
+        pushd .build/vim
+        echo "::set-output name=tag::$(git describe --tags)"
+        popd
+
+    - name: Archive
+      run: |
+        pushd release
+        7z a ../vim_${{ steps.set_vars.outputs.tag }}.zip *
+        popd
+
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: vim_${{ steps.set_vars.outputs.tag }}
+        path: release
