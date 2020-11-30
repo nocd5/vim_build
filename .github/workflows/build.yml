@@ -25,7 +25,7 @@ jobs:
       id: set_vars
       run: |
         pushd .build/vim
-        echo "::set-output name=tag::$(git describe --tags)"
+        echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
         popd
 
     - name: Create Archive
