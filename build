@@ -5,7 +5,7 @@ ROOT=$(readlink -f $(dirname ${0}))
 mkdir -p .build
 pushd .build
 
-git clone --depth 1 https://github.com/vim/vim vim
+git clone --depth 5 https://github.com/vim/vim vim
 
 git clone --depth 1 --single-branch -b 2.7 https://github.com/python/cpython python27
 cp python27/PC/pyconfig.h python27/Include
