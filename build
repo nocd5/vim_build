@@ -7,11 +7,8 @@ pushd .build
 
 git clone --depth 5 https://github.com/vim/vim vim
 
-git clone --depth 1 --single-branch -b 2.7 https://github.com/python/cpython python27
-cp python27/PC/pyconfig.h python27/Include
-
-git clone --depth 1 --single-branch -b 3.8 https://github.com/python/cpython python38
-cp python38/PC/pyconfig.h python38/Include
+git clone --depth 1 --single-branch -b 3.9 https://github.com/python/cpython python3
+cp python3/PC/pyconfig.h python3/Include
 
 git clone --depth 1 --single-branch -b v2.1 https://github.com/LuaJIT/LuaJIT LuaJIT
 
@@ -28,8 +25,7 @@ make -C src -f Make_ming.mak \
     VIMDLL=yes \
     PROPORTIONAL_FONTS=yes \
     LUA=../../LuaJIT/src DYNAMIC_LUA=yes LUA_VER=51 \
-    PYTHON=yes PYTHONINC=-I../../python27/Include PYTHON_VER=27 \
-    PYTHON3=yes PYTHON3INC=-I../../python38/Include PYTHON3_VER=38 \
+    PYTHON3=yes PYTHON3INC=-I../../python3/Include PYTHON3_VER=39 \
     STATIC_STDCPLUS=yes \
     -j 6
 
