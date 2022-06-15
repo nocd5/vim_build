@@ -19,7 +19,9 @@ jobs:
       run: sudo apt install build-essential mingw-w64
 
     - name: Build
-      run: bash ./build
+      run: |
+        printenv
+        bash ./build
 
     - name: Set Vars
       id: set_vars
