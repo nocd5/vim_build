@@ -20,6 +20,7 @@ git apply ${ROOT}/patches/feat_proportional_fonts.patch
 git apply ${ROOT}/patches/gui_cmd.patch
 
 make -C src -f Make_ming.mak \
+    CC= CXX= \
     CROSS_COMPILE=x86_64-w64-mingw32- WINDRES=x86_64-w64-mingw32-windres \
     GUI=yes \
     VIMDLL=yes \
