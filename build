@@ -14,10 +14,10 @@ git clone --depth 1 --single-branch -b v2.1 https://github.com/LuaJIT/LuaJIT Lua
 
 pushd vim
 
-git apply ${ROOT}/patches/modern_icon.patch
-git apply ${ROOT}/patches/tabline-close.patch
-git apply ${ROOT}/patches/feat_proportional_fonts.patch
-git apply ${ROOT}/patches/gui_cmd.patch
+git apply --verbose ${ROOT}/patches/modern_icon.patch
+git apply --verbose ${ROOT}/patches/tabline-close.patch
+git apply --verbose ${ROOT}/patches/feat_proportional_fonts.patch
+git apply --verbose ${ROOT}/patches/gui_cmd.patch
 
 make -C src -f Make_ming.mak \
     CROSS_COMPILE=x86_64-w64-mingw32- WINDRES=x86_64-w64-mingw32-windres \
