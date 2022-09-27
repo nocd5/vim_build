@@ -1,8 +1,8 @@
-diff --git a/src/gui_w32.c b/src/gui_w32.c
-index 1ef74da..e932083 100644
+diff --git a/gui_w32.c b/gui_w32.c
+index 3ade631..e4b5d2b 100644
 --- a/src/gui_w32.c
 +++ b/src/gui_w32.c
-@@ -8586,6 +8586,7 @@ GetTabFromPoint(
+@@ -8022,6 +8022,7 @@ GetTabFromPoint(
  
  static POINT	    s_pt = {0, 0};
  static HCURSOR      s_hCursor = NULL;
@@ -10,7 +10,7 @@ index 1ef74da..e932083 100644
  
      static LRESULT CALLBACK
  tabline_wndproc(
-@@ -8657,6 +8658,43 @@ tabline_wndproc(
+@@ -8094,17 +8095,40 @@ tabline_wndproc(
  		}
  		break;
  	    }
@@ -23,10 +23,18 @@ index 1ef74da..e932083 100644
 +		    SetCapture(hwnd);
 +		break;
 +	    }
-+	case WM_MBUTTONUP:
-+	    {
+ 	case WM_MBUTTONUP:
+ 	    {
+-		TCHITTESTINFO htinfo;
+-
+-		htinfo.pt.x = GET_X_LPARAM(lParam);
+-		htinfo.pt.y = GET_Y_LPARAM(lParam);
+-		idx0 = TabCtrl_HitTest(hwnd, &htinfo);
+-		if (idx0 != -1)
 +		if (GetCapture() == hwnd)
-+		{
+ 		{
+-		    idx0 += 1;
+-		    send_tabline_menu_event(idx0, TABLINE_MENU_CLOSE);
 +		    ReleaseCapture();
 +		    /* when the mouse events was executed on the same tab */
 +		    pt.x = GET_X_LPARAM(lParam);
@@ -48,9 +56,6 @@ index 1ef74da..e932083 100644
 +			}
 +		    }
 +		    s_tp = NULL;
-+		}
-+		break;
-+	    }
- 	default:
- 	    break;
-     }
+ 		}
+ 		break;
+ 	    }
