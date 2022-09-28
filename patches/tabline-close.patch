@@ -1,5 +1,5 @@
-diff --git a/gui_w32.c b/gui_w32.c
-index 3ade631..e4b5d2b 100644
+diff --git a/src/gui_w32.c b/src/gui_w32.c
+index 3ade631..23c5fb5 100644
 --- a/src/gui_w32.c
 +++ b/src/gui_w32.c
 @@ -8022,6 +8022,7 @@ GetTabFromPoint(
@@ -10,7 +10,7 @@ index 3ade631..e4b5d2b 100644
  
      static LRESULT CALLBACK
  tabline_wndproc(
-@@ -8094,17 +8095,40 @@ tabline_wndproc(
+@@ -8094,17 +8095,29 @@ tabline_wndproc(
  		}
  		break;
  	    }
@@ -41,19 +41,8 @@ index 3ade631..e4b5d2b 100644
 +		    pt.y = GET_Y_LPARAM(lParam);
 +		    if (GetTabFromPoint(hwnd, pt) == s_tp)
 +		    {
-+			if (s_tp == curtab)
-+			{
-+			    if (first_tabpage->tp_next != NULL)
-+			    {
-+				tabpage_close(FALSE);
-+				update_screen(0);
-+			    }
-+			}
-+			else if (s_tp != NULL)
-+			{
-+			    tabpage_close_other(s_tp, FALSE);
-+			    update_screen(0);
-+			}
++			idx0 = tabpage_index(s_tp);
++			send_tabline_menu_event(idx0, TABLINE_MENU_CLOSE);
 +		    }
 +		    s_tp = NULL;
  		}
