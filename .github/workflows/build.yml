@@ -25,22 +25,22 @@ jobs:
       id: set_vars
       run: |
         pushd .build/vim
-        echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+        echo "vim_tag=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
         popd
 
     - name: Create Archive
       run: |
         pushd release
-        7z a ../vim_${{ steps.set_vars.outputs.tag }}.zip *
+        7z a ../vim_${{ env.vim_tag }}.zip *
         popd
 
     - name: Create Release
       id: create_release
-      run: gh release create ${{ steps.set_vars.outputs.tag }} --generate-notes
+      run: gh release create ${{ env.vim_tag }} --generate-notes
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload
-      run: gh release upload ${{ steps.set_vars.outputs.tag }} vim_${{ steps.set_vars.outputs.tag }}.zip
+      run: gh release upload ${{ env.vim_tag }} vim_${{ env.vim_tag }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
