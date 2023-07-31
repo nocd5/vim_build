@@ -42,7 +42,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload
-      if: success()
+      if: steps.create_release.outcome == 'success'
       run: gh release upload ${{ env.vim_tag }} vim_${{ env.vim_tag }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
