@@ -1,25 +1,16 @@
 diff --git a/src/gui_w32.c b/src/gui_w32.c
-index 3ade631..23c5fb5 100644
+index 78f252a..e7c6b51 100644
 --- a/src/gui_w32.c
 +++ b/src/gui_w32.c
-@@ -8022,6 +8022,7 @@ GetTabFromPoint(
- 
- static POINT	    s_pt = {0, 0};
- static HCURSOR      s_hCursor = NULL;
-+static tabpage_T    *s_tp = NULL;
- 
-     static LRESULT CALLBACK
- tabline_wndproc(
-@@ -8094,17 +8095,29 @@ tabline_wndproc(
+@@ -8487,17 +8487,28 @@ tabline_wndproc(
  		}
  		break;
  	    }
 +	case WM_MBUTTONDOWN:
 +	    {
-+		pt.x = GET_X_LPARAM(lParam);
-+		pt.y = GET_Y_LPARAM(lParam);
-+		s_tp = GetTabFromPoint(hwnd, pt);
-+		if (s_tp != NULL)
++		s_pt.x = GET_X_LPARAM(lParam);
++		s_pt.y = GET_Y_LPARAM(lParam);
++		if (GetTabFromPoint(hwnd, s_pt) != NULL)
 +		    SetCapture(hwnd);
 +		break;
 +	    }
@@ -39,12 +30,12 @@ index 3ade631..23c5fb5 100644
 +		    /* when the mouse events was executed on the same tab */
 +		    pt.x = GET_X_LPARAM(lParam);
 +		    pt.y = GET_Y_LPARAM(lParam);
-+		    if (GetTabFromPoint(hwnd, pt) == s_tp)
++		    tp = GetTabFromPoint(hwnd, pt);
++		    if (tp == GetTabFromPoint(hwnd, s_pt))
 +		    {
-+			idx0 = tabpage_index(s_tp);
++			idx0 = tabpage_index(tp);
 +			send_tabline_menu_event(idx0, TABLINE_MENU_CLOSE);
 +		    }
-+		    s_tp = NULL;
  		}
  		break;
  	    }
